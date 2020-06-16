@@ -25,9 +25,9 @@ use Psr\Container\ContainerInterface;
 use RuntimeException;
 
 /**
- * Class EspressoContainer.
+ * Class LegatusContainer.
  */
-class EspressoContainer implements ContainerInterface
+class LegatusContainer implements ContainerInterface
 {
     /**
      * Delegate containers are used when services are impossible to resolve.
@@ -50,13 +50,13 @@ class EspressoContainer implements ContainerInterface
      */
     private array $deferred;
     /**
-     * @var ProviderFunction[]
+     * @var Closure[]|ProviderFunction[]
      */
     private array $providers;
     private bool $defaultToSingleton;
 
     /**
-     * EspressoContainer constructor.
+     * LegatusContainer constructor.
      *
      * @param bool $defaultToSingleton
      */
@@ -117,8 +117,8 @@ class EspressoContainer implements ContainerInterface
     }
 
     /**
-     * @param string           $name
-     * @param ProviderFunction $provider
+     * @param string                   $name
+     * @param Closure|ProviderFunction $provider
      */
     public function addProvider(string $name, $provider): void
     {

@@ -11,18 +11,18 @@ declare(strict_types=1);
 
 namespace Legatus\Support\Container\Provider;
 
-use Legatus\Support\Container\EspressoContainer;
+use Legatus\Support\Container\LegatusContainer;
 
 /**
  * Interface ProviderFunction.
  *
- * A provider function is any callable that takes an instance of the Espresso
+ * A provider function is any callable that takes an instance of the Legatus
  * container as an argument.
  */
 interface ProviderFunction
 {
     /**
-     * @param EspressoContainer $container
+     * @param LegatusContainer $container
      */
-    public function __invoke(EspressoContainer $container): void;
+    public function __invoke(LegatusContainer $container): void;
 }

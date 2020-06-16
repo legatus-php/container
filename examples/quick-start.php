@@ -1,21 +1,15 @@
-Legatus Container
-=================
-
-Flexible and simple PSR-11 dependency injection container
-
-[![Build Status](https://drone.mnavarro.dev/api/badges/legatus/container/status.svg)](https://drone.mnavarro.dev/legatus/container)
-
-## Installation
-You can install the Container component using [Composer][composer]:
-
-```bash
-composer require legatus/container
-```
-
-## Quick Start
-
-```php
 <?php
+
+declare(strict_types=1);
+
+/*
+ * This file is part of the Legatus project organization.
+ * (c) Matías Navarro-Carter <contact@mnavarro.dev>
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+require_once __DIR__.'/../vendor/autoload.php';
 
 use function Legatus\Support\Container\Definition\Argument\service;
 use Legatus\Support\Container\LegatusContainer;
@@ -63,22 +57,3 @@ $container->extend('some-service-to-extend')
 
 // You can add delegate containers
 $container->addDelegate($someOtherContainer);
-
-```
-
-For more details you can check the [online documentation here][docs].
-
-## Community
-We still do not have a community channel. If you would like to help with that, you can let me know!
-
-## Contributing
-Read the contributing guide to know how can you contribute to Quilt.
-
-## Security Issues
-Please report security issues privately by email and give us a period of grace before disclosing.
-
-## About Legatus
-Legatus is a personal open source project led by Matías Navarro Carter and developed by contributors.
-
-[composer]: https://getcomposer.org/
-[docs]: https://legatus.mnavarro.dev/components/container

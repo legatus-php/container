@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Legatus\Support\Container\Provider;
 
-use Legatus\Support\Container\EspressoContainer;
+use Legatus\Support\Container\LegatusContainer;
 
 /**
  * Interface Bootable.
@@ -21,7 +21,7 @@ use Legatus\Support\Container\EspressoContainer;
 interface Bootable
 {
     /**
-     * @param EspressoContainer $container
+     * @param LegatusContainer $container
      */
-    public function boot(EspressoContainer $container): void;
+    public function boot(LegatusContainer $container): void;
 }
