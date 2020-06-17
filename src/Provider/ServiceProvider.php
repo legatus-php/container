@@ -11,18 +11,20 @@ declare(strict_types=1);
 
 namespace Legatus\Support\Container\Provider;
 
+use Legatus\Support\Container\Config\Reader;
 use Legatus\Support\Container\LegatusContainer;
 
 /**
- * Interface ProviderFunction.
+ * Interface ServiceProvider.
  *
- * A provider function is any callable that takes an instance of the Legatus
- * container as an argument.
+ * A Service Provider is an object that provides services to the main Legatus
+ * container instance.
  */
-interface ProviderFunction
+interface ServiceProvider
 {
     /**
      * @param LegatusContainer $container
+     * @param Reader           $config
      */
-    public function __invoke(LegatusContainer $container): void;
+    public function register(LegatusContainer $container, Reader $config): void;
 }

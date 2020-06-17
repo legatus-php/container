@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Legatus\Support\Container\Definition;
 
+use Legatus\Support\Container\Config\Reader;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -20,8 +21,9 @@ interface Resolvable
 {
     /**
      * @param ContainerInterface $container
+     * @param Reader             $config
      *
      * @return mixed
      */
-    public function resolve(ContainerInterface $container);
+    public function resolve(ContainerInterface $container, Reader $config);
 }

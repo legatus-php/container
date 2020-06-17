@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Legatus\Support\Container\Definition;
 
+use Legatus\Support\Container\Config\Reader;
 use Legatus\Support\Container\Definition\Argument\Argument;
 use Psr\Container\ContainerInterface;
 
@@ -42,28 +43,30 @@ class MethodCall
     /**
      * @param object             $target
      * @param ContainerInterface $container
+     * @param Reader             $config
      *
      * @return mixed
      */
-    public function call(object $target, ContainerInterface $container)
+    public function call(object $target, ContainerInterface $container, Reader $config)
     {
         if (!method_exists($target, $this->methodName)) {
             throw new \RuntimeException(sprintf('PaymentMethod %s does not exist in object of type %s', $this->methodName, get_class($target)));
         }
 
-        return $target->{$this->methodName}(...$this->resolveArguments($container));
+        return $target->{$this->methodName}(...$this->resolveArguments($container, $config));
     }
 
     /**
      * @param ContainerInterface $container
+     * @param Reader             $config
      *
      * @return array
      */
-    protected function resolveArguments(ContainerInterface $container): array
+    protected function resolveArguments(ContainerInterface $container, Reader $config): array
     {
         $resolved = [];
         foreach ($this->arguments as $argument) {
-            $resolved[] = $argument->resolve($container);
+            $resolved[] = $argument->resolve($container, $config);
         }
 
         return $resolved;

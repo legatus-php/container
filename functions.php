@@ -44,3 +44,14 @@ function service(string $id): ServiceArgument
 {
     return new ServiceArgument($id);
 }
+
+/**
+ * @param string     $path
+ * @param mixed|null $default
+ *
+ * @return ConfigArgument
+ */
+function config(string $path, $default = null): ConfigArgument
+{
+    return new ConfigArgument($path, $default);
+}

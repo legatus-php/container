@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Legatus\Support\Container\Definition;
 
+use Legatus\Support\Container\Config\Reader;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
 
@@ -38,10 +39,11 @@ final class DeferredDefinition extends AbstractDefinition
 
     /**
      * @param ContainerInterface $container
+     * @param Reader             $config
      *
      * @return mixed|void
      */
-    protected function doResolve(ContainerInterface $container)
+    protected function doResolve(ContainerInterface $container, Reader $config)
     {
         /** @var Definition|null $definition */
         $definition = ($this->findExtension)($this->getId());
@@ -49,6 +51,6 @@ final class DeferredDefinition extends AbstractDefinition
             throw new RuntimeException(sprintf('Attempted to extend service "%s" but it was never declared', $this->getId()));
         }
 
-        return $definition->resolve($container);
+        return $definition->resolve($container, $config);
     }
 }

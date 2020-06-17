@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Legatus\Support\Container\Definition;
 
+use Legatus\Support\Container\Config\Reader;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -51,21 +52,23 @@ final class TagDefinition extends AbstractDefinition
 
     /**
      * @param ContainerInterface $container
+     * @param Reader             $config
      *
      * @return array
      */
-    public function resolve(ContainerInterface $container): array
+    public function resolve(ContainerInterface $container, Reader $config): array
     {
         // We override the method to bypass the cache.
-        return $this->doResolve($container);
+        return $this->doResolve($container, $config);
     }
 
     /**
      * @param ContainerInterface $container
+     * @param Reader             $config
      *
      * @return array
      */
-    protected function doResolve(ContainerInterface $container): array
+    protected function doResolve(ContainerInterface $container, Reader $config): array
     {
         $resolved = [];
         foreach ($this->services as $key => $service) {

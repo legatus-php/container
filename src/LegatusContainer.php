@@ -12,6 +12,9 @@ declare(strict_types=1);
 namespace Legatus\Support\Container;
 
 use Closure;
+use Legatus\Support\Container\Config\ArrayReader;
+use Legatus\Support\Container\Config\NullReader;
+use Legatus\Support\Container\Config\Reader;
 use Legatus\Support\Container\Definition\AliasDefinition;
 use Legatus\Support\Container\Definition\ArgumentDefinition;
 use Legatus\Support\Container\Definition\ClassDefinition;
@@ -19,8 +22,7 @@ use Legatus\Support\Container\Definition\DeferredDefinition;
 use Legatus\Support\Container\Definition\Definition;
 use Legatus\Support\Container\Definition\FactoryDefinition;
 use Legatus\Support\Container\Definition\TagDefinition;
-use Legatus\Support\Container\Provider\Bootable;
-use Legatus\Support\Container\Provider\ProviderFunction;
+use Legatus\Support\Container\Provider\ServiceProvider;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
 
@@ -29,6 +31,7 @@ use RuntimeException;
  */
 class LegatusContainer implements ContainerInterface
 {
+    private Reader $config;
     /**
      * Delegate containers are used when services are impossible to resolve.
      *
@@ -50,40 +53,54 @@ class LegatusContainer implements ContainerInterface
      */
     private array $deferred;
     /**
-     * @var Closure[]|ProviderFunction[]
+     * @var Closure[]|ServiceProvider[]
      */
     private array $providers;
-    private bool $defaultToSingleton;
+
+    /**
+     * @param array $config
+     *
+     * @return ContainerInterface
+     */
+    public static function configure(array $config): ContainerInterface
+    {
+        return new self(new ArrayReader($config));
+    }
 
     /**
      * LegatusContainer constructor.
      *
-     * @param bool $defaultToSingleton
+     * @param Reader|null $config
      */
-    public function __construct(bool $defaultToSingleton = true)
+    public function __construct(Reader $config = null)
     {
-        $this->defaultToSingleton = $defaultToSingleton;
+        $this->config = $config ?? new NullReader();
         $this->delegates = [];
         $this->completed = [];
         $this->deferred = [];
         $this->providers = [];
+        if ($this->config->read('container.autowire.enabled', false) === true) {
+            $this->delegates[] = new ReflectionContainer(
+                $this,
+                $this->config->read('container.autowire.cache_resolutions', true)
+            );
+        }
     }
 
     /**
      * @param string $id
-     * @param bool   $secondPass
      *
      * @return mixed|object
      */
-    public function get($id, bool $secondPass = false)
+    public function get($id)
     {
         // First, we check if is in a deferred definition.
         if (array_key_exists($id, $this->deferred)) {
-            return $this->deferred[$id]->resolve($this);
+            return $this->deferred[$id]->resolve($this, $this->config);
         }
         // Then, we check if is in a completed service
         if (array_key_exists($id, $this->completed)) {
-            return $this->completed[$id]->resolve($this);
+            return $this->completed[$id]->resolve($this, $this->config);
         }
         // Then in the container delegates
         foreach ($this->delegates as $container) {
@@ -117,18 +134,16 @@ class LegatusContainer implements ContainerInterface
     }
 
     /**
-     * @param string                   $name
-     * @param Closure|ProviderFunction $provider
+     * @param ServiceProvider $provider
+     * @param string|null     $name
      */
-    public function addProvider(string $name, $provider): void
+    public function addProvider(ServiceProvider $provider, string $name = null): void
     {
+        $name = $name ?? get_class($provider);
         if (array_key_exists($name, $this->providers)) {
             throw new RuntimeException(sprintf('Provided named %s is already registered', $name));
         }
-        if ($provider instanceof Bootable) {
-            $provider->boot($this);
-        }
-        $provider($this);
+        $provider->register($this, $this->config);
         $this->providers[$name] = $provider;
     }
 
@@ -152,9 +167,7 @@ class LegatusContainer implements ContainerInterface
                 $id,
                 Closure::fromCallable([$this, 'findCompleted'])
             );
-            if ($this->defaultToSingleton === true) {
-                $definition->makeSingleton();
-            }
+            $this->makeSingletonIfApplies($definition);
             $this->deferred[$id] = $definition;
         }
 
@@ -175,9 +188,7 @@ class LegatusContainer implements ContainerInterface
             $id,
             $concrete
         );
-        if ($this->defaultToSingleton === true) {
-            $definition->makeSingleton();
-        }
+        $this->makeSingletonIfApplies($definition);
         $this->completed[$id] = $definition;
 
         return $definition;
@@ -196,9 +207,7 @@ class LegatusContainer implements ContainerInterface
             $id,
             $factory
         );
-        if ($this->defaultToSingleton === true) {
-            $definition->makeSingleton();
-        }
+        $this->makeSingletonIfApplies($definition);
         $this->completed[$id] = $definition;
 
         return $definition;
@@ -260,5 +269,15 @@ class LegatusContainer implements ContainerInterface
         }
 
         return $this->completed[$id];
+    }
+
+    /**
+     * @param Definition $definition
+     */
+    private function makeSingletonIfApplies(Definition $definition): void
+    {
+        if ($this->config->read('container.default_to_singleton', true) === true) {
+            $definition->makeSingleton();
+        }
     }
 }

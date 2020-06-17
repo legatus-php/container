@@ -15,33 +15,36 @@ use Legatus\Support\Container\Config\Reader;
 use Psr\Container\ContainerInterface;
 
 /**
- * Class RawArgument.
+ * Class ConfigArgument.
  */
-class RawArgument implements Argument
+class ConfigArgument implements Argument
 {
+    private string $path;
     /**
-     * @var mixed
+     * @var mixed|null
      */
-    private $value;
+    private $default;
 
     /**
-     * RawArgument constructor.
+     * ConfigArgument constructor.
      *
-     * @param $value
+     * @param string $path
+     * @param null   $default
      */
-    public function __construct($value)
+    public function __construct(string $path, $default = null)
     {
-        $this->value = $value;
+        $this->path = $path;
+        $this->default = $default;
     }
 
     /**
      * @param ContainerInterface $container
      * @param Reader             $config
      *
-     * @return mixed
+     * @return mixed|void
      */
     public function resolve(ContainerInterface $container, Reader $config)
     {
-        return $this->value;
+        return $config->read($this->path, $this->default);
     }
 }

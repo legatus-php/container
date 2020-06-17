@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Legatus\Support\Container\Definition;
 
+use Legatus\Support\Container\Config\Reader;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -18,10 +19,7 @@ use Psr\Container\ContainerInterface;
  */
 final class AliasDefinition extends AbstractDefinition
 {
-    /**
-     * @var string
-     */
-    private $serviceName;
+    private string $serviceName;
 
     /**
      * AliasDefinition constructor.
@@ -37,21 +35,23 @@ final class AliasDefinition extends AbstractDefinition
 
     /**
      * @param ContainerInterface $container
+     * @param Reader             $config
      *
      * @return mixed|void|null
      */
-    public function resolve(ContainerInterface $container)
+    public function resolve(ContainerInterface $container, Reader $config)
     {
         // We skip caches
-        return $this->doResolve($container);
+        return $this->doResolve($container, $config);
     }
 
     /**
      * @param ContainerInterface $container
+     * @param Reader             $config
      *
      * @return mixed|void
      */
-    protected function doResolve(ContainerInterface $container)
+    protected function doResolve(ContainerInterface $container, Reader $config)
     {
         return $container->get($this->serviceName);
     }

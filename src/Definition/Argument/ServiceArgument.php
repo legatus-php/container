@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Legatus\Support\Container\Definition\Argument;
 
+use Legatus\Support\Container\Config\Reader;
 use Legatus\Support\Container\Definition\MethodCall;
 use Psr\Container\ContainerInterface;
 
@@ -35,17 +36,18 @@ class ServiceArgument implements Argument
 
     /**
      * @param ContainerInterface $container
+     * @param Reader             $config
      *
      * @return mixed
      */
-    public function resolve(ContainerInterface $container)
+    public function resolve(ContainerInterface $container, Reader $config)
     {
         $service = $container->get($this->serviceName);
         if ($this->methodCall === null) {
             return $service;
         }
 
-        return $this->methodCall->call($service, $container);
+        return $this->methodCall->call($service, $container, $config);
     }
 
     /**

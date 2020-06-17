@@ -21,7 +21,7 @@ class NotFoundException extends InvalidArgumentException implements NotFoundExce
 {
     public static function lied(string $provider, string $id): self
     {
-        return new self(sprintf('ProviderFunction "%s" lied about providing service of id "%s"', $provider, $id));
+        return new self(sprintf('ServiceProvider "%s" lied about providing service of id "%s"', $provider, $id));
     }
 
     public static function id(string $id): self

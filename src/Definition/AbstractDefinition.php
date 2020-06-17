@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Legatus\Support\Container\Definition;
 
 use InvalidArgumentException;
+use Legatus\Support\Container\Config\Reader;
 use Legatus\Support\Container\Definition\Argument\Argument;
 use function Legatus\Support\Container\Definition\Argument\raw;
 use Psr\Container\ContainerInterface;
@@ -125,20 +126,20 @@ abstract class AbstractDefinition implements Definition
         return $this;
     }
 
-    public function resolve(ContainerInterface $container)
+    public function resolve(ContainerInterface $container, Reader $config)
     {
         if ($this->cache !== null) {
             return $this->cache;
         }
-        $instance = $this->doResolve($container);
+        $instance = $this->doResolve($container, $config);
         foreach ($this->methodCalls as $methodCall) {
-            $methodCall->call($instance, $container);
+            $methodCall->call($instance, $container, $config);
         }
         foreach ($this->inflectors as $inflector) {
-            $inflector($instance, $container);
+            $inflector($instance, $container, $config);
         }
         foreach ($this->decorators as $decorator) {
-            $instance = $decorator($instance, $container);
+            $instance = $decorator($instance, $container, $config);
             if ($instance === null) {
                 throw new InvalidArgumentException('Decorators must return the new decorated instance');
             }
@@ -152,8 +153,9 @@ abstract class AbstractDefinition implements Definition
 
     /**
      * @param ContainerInterface $container
+     * @param Reader             $config
      *
      * @return mixed
      */
-    abstract protected function doResolve(ContainerInterface $container);
+    abstract protected function doResolve(ContainerInterface $container, Reader $config);
 }

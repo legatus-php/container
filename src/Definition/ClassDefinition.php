@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Legatus\Support\Container\Definition;
 
+use Legatus\Support\Container\Config\Reader;
 use Legatus\Support\Container\Definition\Argument\Argument;
 use function Legatus\Support\Container\Definition\Argument\raw;
 use Psr\Container\ContainerInterface;
@@ -72,12 +73,13 @@ final class ClassDefinition extends AbstractDefinition implements ArgumentDefini
 
     /**
      * @param ContainerInterface $container
+     * @param Reader             $config
      *
      * @return array|object|void
      */
-    protected function doResolve(ContainerInterface $container)
+    protected function doResolve(ContainerInterface $container, Reader $config)
     {
-        return new $this->className(...$this->resolveArguments($container));
+        return new $this->className(...$this->resolveArguments($container, $config));
     }
 
     protected function guard(): void
@@ -89,14 +91,15 @@ final class ClassDefinition extends AbstractDefinition implements ArgumentDefini
 
     /**
      * @param ContainerInterface $container
+     * @param Reader             $config
      *
      * @return array
      */
-    protected function resolveArguments(ContainerInterface $container): array
+    protected function resolveArguments(ContainerInterface $container, Reader $config): array
     {
         $resolved = [];
         foreach ($this->arguments as $argument) {
-            $resolved[] = $argument->resolve($container);
+            $resolved[] = $argument->resolve($container, $config);
         }
 
         return $resolved;

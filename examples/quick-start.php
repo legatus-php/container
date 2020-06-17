@@ -31,15 +31,6 @@ $container->register('some-service', SomeConcreteService::class)
     // Otherwise, arguments are treated as raw values
     ->addArgument('this-string-will-be-a-raw-argument');
 
-// Service providers can be simple closures
-$container->addProvider('provider-name', static function (LegatusContainer $container) {
-    $container->factory('some-service-provided', static function (PsrContainer $c) {
-        return new SomeService(
-             $c->get('some-dependency')
-         );
-    });
-});
-
 // You can extend any defined service in Legatus container
 $container->extend('some-service-to-extend')
     // You can decorate a service (this will override the service with a child type)

@@ -9,19 +9,18 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\Provider;
-
-use Legatus\Support\Container\LegatusContainer;
+namespace Legatus\Support\Container\Config;
 
 /**
- * Interface Bootable.
- *
- * Makes a service provider bootable.
+ * Class NullReader.
  */
-interface Bootable
+class NullReader implements Reader
 {
     /**
-     * @param LegatusContainer $container
+     * {@inheritdoc}
      */
-    public function boot(LegatusContainer $container): void;
+    public function read(string $query, $default = null)
+    {
+        return $default;
+    }
 }

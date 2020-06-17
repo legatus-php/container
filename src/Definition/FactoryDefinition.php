@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Legatus\Support\Container\Definition;
 
+use Legatus\Support\Container\Config\Reader;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -37,11 +38,12 @@ final class FactoryDefinition extends AbstractDefinition
 
     /**
      * @param ContainerInterface $container
+     * @param Reader             $config
      *
      * @return array|object
      */
-    protected function doResolve(ContainerInterface $container)
+    protected function doResolve(ContainerInterface $container, Reader $config)
     {
-        return ($this->factory)($container);
+        return ($this->factory)($container, $config);
     }
 }
