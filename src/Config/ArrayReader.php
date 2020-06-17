@@ -26,6 +26,7 @@ class ArrayReader implements Reader
             ],
             'default_to_singleton' => true,
             'enable_bus' => true,
+            'providers' => [],
         ],
     ];
 

@@ -86,8 +86,20 @@ class LegatusContainer implements ContainerInterface
                 $this->config->read('container.autowire.cache_resolutions', true)
             );
         }
+
         if ($this->config->read('container.enable_bus', true) === true) {
             Bus::configure($this);
+        }
+
+        foreach ($this->config->read('container.providers', []) as $class) {
+            if (is_string($class)) {
+                $class = new $class();
+            }
+
+            if (!is_object($class) || !$class instanceof ServiceProvider) {
+                throw new RuntimeException('Invalid provider class');
+            }
+            $this->addProvider($class);
         }
     }
 
