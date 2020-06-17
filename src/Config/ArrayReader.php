@@ -39,7 +39,7 @@ class ArrayReader implements Reader
      */
     public function __construct(array $config)
     {
-        $this->config = array_merge_recursive(self::$default, $config);
+        $this->config = array_replace_recursive(self::$default, $config);
     }
 
     /**
