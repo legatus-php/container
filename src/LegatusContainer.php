@@ -23,6 +23,7 @@ use Legatus\Support\Container\Definition\Definition;
 use Legatus\Support\Container\Definition\FactoryDefinition;
 use Legatus\Support\Container\Definition\TagDefinition;
 use Legatus\Support\Container\Provider\ServiceProvider;
+use Legatus\Support\Container\ServiceBus\Bus;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
 
@@ -84,6 +85,9 @@ class LegatusContainer implements ContainerInterface
                 $this,
                 $this->config->read('container.autowire.cache_resolutions', true)
             );
+        }
+        if ($this->config->read('container.enable_bus', true) === true) {
+            Bus::configure($this);
         }
     }
 

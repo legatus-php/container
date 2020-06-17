@@ -25,6 +25,7 @@ class ArrayReader implements Reader
                 'cache_resolutions' => true,
             ],
             'default_to_singleton' => true,
+            'enable_bus' => true,
         ],
     ];
 
