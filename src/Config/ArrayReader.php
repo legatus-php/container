@@ -53,7 +53,7 @@ class ArrayReader implements Reader
             if ($data === null) {
                 return $default;
             }
-            $part = array_shift($data);
+            $part = array_shift($parts);
 
             if (is_numeric($part)) {
                 $part = (int) $part;
