@@ -18,18 +18,6 @@ namespace Legatus\Support\Container\Config;
  */
 class ArrayReader implements Reader
 {
-    protected static array $default = [
-        'container' => [
-            'autowire' => [
-                'enabled' => false,
-                'cache_resolutions' => true,
-            ],
-            'default_to_singleton' => true,
-            'enable_bus' => true,
-            'providers' => [],
-        ],
-    ];
-
     private array $config;
 
     /**
@@ -39,7 +27,7 @@ class ArrayReader implements Reader
      */
     public function __construct(array $config)
     {
-        $this->config = array_replace_recursive(self::$default, $config);
+        $this->config = $config;
     }
 
     /**

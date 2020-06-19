@@ -23,7 +23,6 @@ use Legatus\Support\Container\Definition\Definition;
 use Legatus\Support\Container\Definition\FactoryDefinition;
 use Legatus\Support\Container\Definition\TagDefinition;
 use Legatus\Support\Container\Provider\ServiceProvider;
-use Legatus\Support\Container\ServiceBus\Bus;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
 
@@ -80,27 +79,6 @@ class LegatusContainer implements ContainerInterface
         $this->completed = [];
         $this->deferred = [];
         $this->providers = [];
-        if ($this->config->read('container.autowire.enabled', false) === true) {
-            $this->delegates[] = new ReflectionContainer(
-                $this,
-                $this->config->read('container.autowire.cache_resolutions', true)
-            );
-        }
-
-        if ($this->config->read('container.enable_bus', true) === true) {
-            Bus::configure($this);
-        }
-
-        foreach ($this->config->read('container.providers', []) as $class) {
-            if (is_string($class)) {
-                $class = new $class();
-            }
-
-            if (!is_object($class) || !$class instanceof ServiceProvider) {
-                throw new RuntimeException('Invalid provider class');
-            }
-            $this->addProvider($class);
-        }
     }
 
     /**
@@ -110,6 +88,10 @@ class LegatusContainer implements ContainerInterface
      */
     public function get($id)
     {
+        if ($id === ContainerInterface::class || $id === __CLASS__) {
+            return $this;
+        }
+
         // First, we check if is in a deferred definition.
         if (array_key_exists($id, $this->deferred)) {
             return $this->deferred[$id]->resolve($this, $this->config);
@@ -134,6 +116,9 @@ class LegatusContainer implements ContainerInterface
      */
     public function has($id): bool
     {
+        if ($id === ContainerInterface::class || $id === __CLASS__) {
+            return true;
+        }
         if (array_key_exists($id, $this->deferred)) {
             return true;
         }
