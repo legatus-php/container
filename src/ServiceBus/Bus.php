@@ -17,6 +17,20 @@ use RuntimeException;
 
 /**
  * Class Bus.
+ *
+ * This class wraps a container interface and allows it to call methods on
+ * different services statically (globally) through the Bus::call() method.
+ *
+ * Using this is a bad idea if your services are not designed properly: i.e.
+ * they contain shared state. Ideally, the methods you call should not have
+ * side effects and must have some sort of deterministic output based on the input.
+ *
+ * It is also not a good idea to use this method everywhere. It's okay in
+ * controllers for some minor http related stuff, for example. But please do not
+ * use this in your domain layer. Bear in mind that using this bounds your code
+ * to this specific container library and also makes your classes harder to test.
+ *
+ * As with everything, balance it out and use it wisely.
  */
 class Bus
 {

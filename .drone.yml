@@ -1,6 +1,6 @@
 kind: pipeline
 type: docker
-name: CI
+name: Integration Pipeline
 
 steps:
   - name: restore-cache
@@ -38,5 +38,3 @@ steps:
         from_secret: s3_secret_key
       mount:
         - .cache
-      when:
-        event: push
