@@ -12,15 +12,15 @@
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
-            "Legatus\\Support\\Container\\": "src"
+            "Legatus\\Support\\": ["src/container", "src/config", "src/arguments", "src/definitions"]
         },
         "files": [
-            "functions.php"
+            "src/functions.php"
         ]
     },
     "autoload-dev": {
         "psr-4": {
-            "Legatus\\Support\\Container\\Tests\\": "tests"
+            "Legatus\\Support\\":  ["tests/container", "tests/config", "tests/arguments", "tests/definitions"]
         }
     },
     "require": {

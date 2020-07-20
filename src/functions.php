@@ -9,7 +9,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\ServiceBus;
+namespace Legatus\Support;
 
 /**
  * @param string $serviceId
@@ -20,10 +20,8 @@ namespace Legatus\Support\Container\ServiceBus;
  */
 function call(string $serviceId, string $method, ...$args)
 {
-    return Bus::call($serviceId, $method, ...$args);
+    return ServiceBus::call($serviceId, $method, ...$args);
 }
-
-namespace Legatus\Support\Container\Definition\Argument;
 
 /**
  * @param $value

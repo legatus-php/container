@@ -11,11 +11,10 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use function Legatus\Support\Container\Definition\Argument\service;
-use Legatus\Support\Container\LegatusContainer;
+use function Legatus\Support\service;
 use Psr\Container\ContainerInterface as PsrContainer;
 
-$container = new LegatusContainer();
+$container = new Legatus\Support\Container();
 
 // You can instantiate factories and fetch services from the passed container
 $container->factory('some-service', static function (PsrContainer $c) {

@@ -9,15 +9,14 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\Definition;
+namespace Legatus\Support;
 
-use Legatus\Support\Container\Config\Reader;
 use Psr\Container\ContainerInterface;
 
 /**
  * Class AliasDefinition.
  */
-final class AliasDefinition extends AbstractDefinition
+final class AliasDefinition extends BaseServiceDefinition
 {
     private string $serviceName;
 
@@ -35,11 +34,11 @@ final class AliasDefinition extends AbstractDefinition
 
     /**
      * @param ContainerInterface $container
-     * @param Reader             $config
+     * @param Config             $config
      *
      * @return mixed|void|null
      */
-    public function resolve(ContainerInterface $container, Reader $config)
+    public function resolve(ContainerInterface $container, Config $config)
     {
         // We skip caches
         return $this->doResolve($container, $config);
@@ -47,11 +46,11 @@ final class AliasDefinition extends AbstractDefinition
 
     /**
      * @param ContainerInterface $container
-     * @param Reader             $config
+     * @param Config             $config
      *
      * @return mixed|void
      */
-    protected function doResolve(ContainerInterface $container, Reader $config)
+    protected function doResolve(ContainerInterface $container, Config $config)
     {
         return $container->get($this->serviceName);
     }

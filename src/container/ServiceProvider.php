@@ -9,22 +9,19 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\Provider;
-
-use Legatus\Support\Container\Config\Reader;
-use Legatus\Support\Container\LegatusContainer;
+namespace Legatus\Support;
 
 /**
  * Interface ServiceProvider.
  *
  * A Service Provider is an object that provides services to the main Legatus
- * container instance.
+ * Container instance.
  */
 interface ServiceProvider
 {
     /**
-     * @param LegatusContainer $container
-     * @param Reader           $config
+     * @param Container $container
+     * @param Config    $config
      */
-    public function register(LegatusContainer $container, Reader $config): void;
+    public function register(Container $container, Config $config): void;
 }

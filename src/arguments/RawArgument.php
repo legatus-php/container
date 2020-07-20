@@ -9,15 +9,14 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\Definition\Argument;
+namespace Legatus\Support;
 
-use Legatus\Support\Container\Config\Reader;
 use Psr\Container\ContainerInterface;
 
 /**
  * Class RawArgument.
  */
-class RawArgument implements Argument
+class RawArgument implements Resolvable
 {
     /**
      * @var mixed
@@ -36,11 +35,11 @@ class RawArgument implements Argument
 
     /**
      * @param ContainerInterface $container
-     * @param Reader             $config
+     * @param Config             $config
      *
      * @return mixed
      */
-    public function resolve(ContainerInterface $container, Reader $config)
+    public function resolve(ContainerInterface $container, Config $config)
     {
         return $this->value;
     }

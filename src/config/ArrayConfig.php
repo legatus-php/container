@@ -9,19 +9,19 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\Config;
+namespace Legatus\Support;
 
 /**
- * Class ArrayReader.
+ * Class ArrayConfig.
  *
  * Allows to query with dot notation on an array.
  */
-class ArrayReader implements Reader
+class ArrayConfig implements Config
 {
     private array $config;
 
     /**
-     * ArrayReader constructor.
+     * ArrayConfig constructor.
      *
      * @param array $config
      */

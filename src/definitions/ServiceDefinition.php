@@ -9,24 +9,22 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\Definition;
-
-use Legatus\Support\Container\Definition\Argument\Argument;
+namespace Legatus\Support;
 
 /**
  * Interface Extensible.
  */
-interface Definition extends Resolvable
+interface ServiceDefinition extends Resolvable
 {
     /**
      * Adds a method call on the definition after has been created.
      *
-     * @param string         $name
-     * @param Argument|mixed ...$arguments
+     * @param string           $name
+     * @param Resolvable|mixed ...$arguments
      *
-     * @return Definition
+     * @return ServiceDefinition
      */
-    public function addMethodCall(string $name, ...$arguments): Definition;
+    public function addMethodCall(string $name, ...$arguments): ServiceDefinition;
 
     /**
      * Decorates a reference.
@@ -43,9 +41,9 @@ interface Definition extends Resolvable
      *
      * @param callable $decorator
      *
-     * @return Definition
+     * @return ServiceDefinition
      */
-    public function decorate(callable $decorator): Definition;
+    public function decorate(callable $decorator): ServiceDefinition;
 
     /**
      * Inflects changes to a reference.
@@ -56,9 +54,9 @@ interface Definition extends Resolvable
      *
      * @param callable $inflector
      *
-     * @return Definition
+     * @return ServiceDefinition
      */
-    public function inflect(callable $inflector): Definition;
+    public function inflect(callable $inflector): ServiceDefinition;
 
     /**
      * @return string
@@ -71,12 +69,12 @@ interface Definition extends Resolvable
     public function isSingleton(): bool;
 
     /**
-     * @return Definition
+     * @return ServiceDefinition
      */
-    public function makeSingleton(): Definition;
+    public function makeSingleton(): ServiceDefinition;
 
     /**
-     * @return Definition
+     * @return ServiceDefinition
      */
-    public function makeMultiton(): Definition;
+    public function makeMultiton(): ServiceDefinition;
 }

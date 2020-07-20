@@ -9,15 +9,14 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\Definition;
+namespace Legatus\Support;
 
-use Legatus\Support\Container\Config\Reader;
 use Psr\Container\ContainerInterface;
 
 /**
  * Class TagDefinition.
  */
-final class TagDefinition extends AbstractDefinition
+final class TagDefinition extends BaseServiceDefinition
 {
     /**
      * @var string[]
@@ -52,11 +51,11 @@ final class TagDefinition extends AbstractDefinition
 
     /**
      * @param ContainerInterface $container
-     * @param Reader             $config
+     * @param Config             $config
      *
      * @return array
      */
-    public function resolve(ContainerInterface $container, Reader $config): array
+    public function resolve(ContainerInterface $container, Config $config): array
     {
         // We override the method to bypass the cache.
         return $this->doResolve($container, $config);
@@ -64,11 +63,11 @@ final class TagDefinition extends AbstractDefinition
 
     /**
      * @param ContainerInterface $container
-     * @param Reader             $config
+     * @param Config             $config
      *
      * @return array
      */
-    protected function doResolve(ContainerInterface $container, Reader $config): array
+    protected function doResolve(ContainerInterface $container, Config $config): array
     {
         $resolved = [];
         foreach ($this->services as $key => $service) {

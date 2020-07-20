@@ -9,18 +9,10 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\Config;
+namespace Legatus\Support;
 
-/**
- * Class NullReader.
- */
-class NullReader implements Reader
+use PHPUnit\Framework\TestCase;
+
+class ContainerTest extends TestCase
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function read(string $query, $default = null)
-    {
-        return $default;
-    }
 }

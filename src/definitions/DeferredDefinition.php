@@ -9,16 +9,15 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\Definition;
+namespace Legatus\Support;
 
-use Legatus\Support\Container\Config\Reader;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
 
 /**
  * Class DefinitionExtension.
  */
-final class DeferredDefinition extends AbstractDefinition
+final class DeferredDefinition extends BaseServiceDefinition
 {
     /**
      * @var callable
@@ -39,13 +38,13 @@ final class DeferredDefinition extends AbstractDefinition
 
     /**
      * @param ContainerInterface $container
-     * @param Reader             $config
+     * @param Config             $config
      *
      * @return mixed|void
      */
-    protected function doResolve(ContainerInterface $container, Reader $config)
+    protected function doResolve(ContainerInterface $container, Config $config)
     {
-        /** @var Definition|null $definition */
+        /** @var ServiceDefinition|null $definition */
         $definition = ($this->findExtension)($this->getId());
         if ($definition === null) {
             throw new RuntimeException(sprintf('Attempted to extend service "%s" but it was never declared', $this->getId()));

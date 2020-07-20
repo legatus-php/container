@@ -9,21 +9,18 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\Definition;
+namespace Legatus\Support;
 
-use Legatus\Support\Container\Config\Reader;
-use Legatus\Support\Container\Definition\Argument\Argument;
-use function Legatus\Support\Container\Definition\Argument\raw;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
 
 /**
  * Class ConcreteDefinition.
  */
-final class ClassDefinition extends AbstractDefinition implements ArgumentDefinition
+final class ClassDefinition extends BaseServiceDefinition implements ArgumentServiceDefinition
 {
     /**
-     * @var Argument[]
+     * @var Resolvable[]
      */
     protected array $arguments;
     /**
@@ -32,7 +29,7 @@ final class ClassDefinition extends AbstractDefinition implements ArgumentDefini
     private string $className;
 
     /**
-     * AbstractDefinition constructor.
+     * BaseServiceDefinition constructor.
      *
      * @param string $id
      * @param string $className
@@ -48,9 +45,9 @@ final class ClassDefinition extends AbstractDefinition implements ArgumentDefini
     /**
      * {@inheritdoc}
      */
-    public function addArgument($argument): ArgumentDefinition
+    public function addArgument($argument): ArgumentServiceDefinition
     {
-        if (!$argument instanceof Argument) {
+        if (!$argument instanceof Resolvable) {
             $argument = raw($argument);
         }
         $this->arguments[] = $argument;
@@ -61,9 +58,9 @@ final class ClassDefinition extends AbstractDefinition implements ArgumentDefini
     /**
      * {@inheritdoc}
      */
-    public function setArgument(int $pos, $argument): ArgumentDefinition
+    public function setArgument(int $pos, $argument): ArgumentServiceDefinition
     {
-        if (!$argument instanceof Argument) {
+        if (!$argument instanceof Resolvable) {
             $argument = raw($argument);
         }
         $this->arguments[$pos] = $argument;
@@ -73,11 +70,11 @@ final class ClassDefinition extends AbstractDefinition implements ArgumentDefini
 
     /**
      * @param ContainerInterface $container
-     * @param Reader             $config
+     * @param Config             $config
      *
      * @return array|object|void
      */
-    protected function doResolve(ContainerInterface $container, Reader $config)
+    protected function doResolve(ContainerInterface $container, Config $config)
     {
         return new $this->className(...$this->resolveArguments($container, $config));
     }
@@ -91,11 +88,11 @@ final class ClassDefinition extends AbstractDefinition implements ArgumentDefini
 
     /**
      * @param ContainerInterface $container
-     * @param Reader             $config
+     * @param Config             $config
      *
      * @return array
      */
-    protected function resolveArguments(ContainerInterface $container, Reader $config): array
+    protected function resolveArguments(ContainerInterface $container, Config $config): array
     {
         $resolved = [];
         foreach ($this->arguments as $argument) {

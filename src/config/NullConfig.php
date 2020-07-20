@@ -9,13 +9,18 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\Definition\Argument;
-
-use Legatus\Support\Container\Definition\Resolvable;
+namespace Legatus\Support;
 
 /**
- * Interface Argument.
+ * Class NullReader.
  */
-interface Argument extends Resolvable
+class NullConfig implements Config
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function read(string $query, $default = null)
+    {
+        return $default;
+    }
 }

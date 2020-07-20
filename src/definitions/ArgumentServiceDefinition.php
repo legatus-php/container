@@ -9,25 +9,23 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\Definition;
-
-use Legatus\Support\Container\Definition\Argument\Argument;
+namespace Legatus\Support;
 
 /**
- * Interface Definition.
+ * Interface ServiceDefinition.
  */
-interface ArgumentDefinition extends Definition
+interface ArgumentServiceDefinition extends ServiceDefinition
 {
     /**
-     * @param Argument|mixed $argument
+     * @param Resolvable|mixed $argument
      *
      * @return $this
      */
     public function addArgument($argument): self;
 
     /**
-     * @param int            $pos
-     * @param Argument|mixed $argument
+     * @param int              $pos
+     * @param Resolvable|mixed $argument
      *
      * @return $this
      */

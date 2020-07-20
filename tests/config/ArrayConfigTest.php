@@ -9,19 +9,18 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\Tests\Config;
+namespace Legatus\Support;
 
-use Legatus\Support\Container\Config\ArrayReader;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class ArrayReaderTest.
+ * Class ArrayConfigTest.
  */
-class ArrayReaderTest extends TestCase
+class ArrayConfigTest extends TestCase
 {
     public function testItReadsEntryWithDotNotation(): void
     {
-        $reader = new ArrayReader([
+        $reader = new ArrayConfig([
             'something' => [
                 'very' => [
                     'deeply' => [
@@ -31,6 +30,6 @@ class ArrayReaderTest extends TestCase
             ],
         ]);
 
-        $this->assertSame('OK', $reader->read('something.very.deeply.nested'));
+        self::assertSame('OK', $reader->read('something.very.deeply.nested'));
     }
 }

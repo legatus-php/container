@@ -9,18 +9,15 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\Definition;
+namespace Legatus\Support;
 
 use InvalidArgumentException;
-use Legatus\Support\Container\Config\Reader;
-use Legatus\Support\Container\Definition\Argument\Argument;
-use function Legatus\Support\Container\Definition\Argument\raw;
 use Psr\Container\ContainerInterface;
 
 /**
- * Class AbstractDefinition.
+ * Class BaseServiceDefinition.
  */
-abstract class AbstractDefinition implements Definition
+abstract class BaseServiceDefinition implements ServiceDefinition
 {
     private string $id;
     /**
@@ -45,7 +42,7 @@ abstract class AbstractDefinition implements Definition
     private $cache;
 
     /**
-     * AbstractDefinition constructor.
+     * BaseServiceDefinition constructor.
      *
      * @param string $id
      */
@@ -61,10 +58,10 @@ abstract class AbstractDefinition implements Definition
     /**
      * {@inheritdoc}
      */
-    public function addMethodCall(string $method, ...$args): Definition
+    public function addMethodCall(string $method, ...$args): ServiceDefinition
     {
         foreach ($args as $key => $argument) {
-            if (!$argument instanceof Argument) {
+            if (!$argument instanceof Resolvable) {
                 $args[$key] = raw($argument);
             }
         }
@@ -92,7 +89,7 @@ abstract class AbstractDefinition implements Definition
     /**
      * {@inheritdoc}
      */
-    public function makeSingleton(): Definition
+    public function makeSingleton(): ServiceDefinition
     {
         $this->singleton = true;
 
@@ -102,14 +99,14 @@ abstract class AbstractDefinition implements Definition
     /**
      * {@inheritdoc}
      */
-    public function makeMultiton(): Definition
+    public function makeMultiton(): ServiceDefinition
     {
         $this->singleton = false;
 
         return $this;
     }
 
-    public function inflect(callable $inflector): Definition
+    public function inflect(callable $inflector): ServiceDefinition
     {
         $this->inflectors[] = $inflector;
 
@@ -119,14 +116,14 @@ abstract class AbstractDefinition implements Definition
     /**
      * {@inheritdoc}
      */
-    public function decorate(callable $decorator): Definition
+    public function decorate(callable $decorator): ServiceDefinition
     {
         $this->decorators[] = $decorator;
 
         return $this;
     }
 
-    public function resolve(ContainerInterface $container, Reader $config)
+    public function resolve(ContainerInterface $container, Config $config)
     {
         if ($this->cache !== null) {
             return $this->cache;
@@ -153,9 +150,9 @@ abstract class AbstractDefinition implements Definition
 
     /**
      * @param ContainerInterface $container
-     * @param Reader             $config
+     * @param Config             $config
      *
      * @return mixed
      */
-    abstract protected function doResolve(ContainerInterface $container, Reader $config);
+    abstract protected function doResolve(ContainerInterface $container, Config $config);
 }

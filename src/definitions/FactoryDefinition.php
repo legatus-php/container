@@ -9,15 +9,14 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\Definition;
+namespace Legatus\Support;
 
-use Legatus\Support\Container\Config\Reader;
 use Psr\Container\ContainerInterface;
 
 /**
  * Class CallableDefinition.
  */
-final class FactoryDefinition extends AbstractDefinition
+final class FactoryDefinition extends BaseServiceDefinition
 {
     /**
      * @var callable
@@ -38,11 +37,11 @@ final class FactoryDefinition extends AbstractDefinition
 
     /**
      * @param ContainerInterface $container
-     * @param Reader             $config
+     * @param Config             $config
      *
      * @return array|object
      */
-    protected function doResolve(ContainerInterface $container, Reader $config)
+    protected function doResolve(ContainerInterface $container, Config $config)
     {
         return ($this->factory)($container, $config);
     }

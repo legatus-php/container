@@ -9,10 +9,8 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\Definition;
+namespace Legatus\Support;
 
-use Legatus\Support\Container\Config\Reader;
-use Legatus\Support\Container\Definition\Argument\Argument;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -24,7 +22,7 @@ class MethodCall
 {
     private string $methodName;
     /**
-     * @var Argument[]
+     * @var Resolvable[]
      */
     private array $arguments;
 
@@ -32,9 +30,9 @@ class MethodCall
      * MethodCall constructor.
      *
      * @param string     $methodName
-     * @param Argument[] $arguments
+     * @param Resolvable ...$arguments
      */
-    public function __construct(string $methodName, Argument ...$arguments)
+    public function __construct(string $methodName, Resolvable ...$arguments)
     {
         $this->methodName = $methodName;
         $this->arguments = $arguments;
@@ -43,11 +41,11 @@ class MethodCall
     /**
      * @param object             $target
      * @param ContainerInterface $container
-     * @param Reader             $config
+     * @param Config             $config
      *
      * @return mixed
      */
-    public function call(object $target, ContainerInterface $container, Reader $config)
+    public function call(object $target, ContainerInterface $container, Config $config)
     {
         if (!method_exists($target, $this->methodName)) {
             throw new \RuntimeException(sprintf('PaymentMethod %s does not exist in object of type %s', $this->methodName, get_class($target)));
@@ -58,11 +56,11 @@ class MethodCall
 
     /**
      * @param ContainerInterface $container
-     * @param Reader             $config
+     * @param Config             $config
      *
      * @return array
      */
-    protected function resolveArguments(ContainerInterface $container, Reader $config): array
+    protected function resolveArguments(ContainerInterface $container, Config $config): array
     {
         $resolved = [];
         foreach ($this->arguments as $argument) {

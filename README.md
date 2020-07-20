@@ -17,7 +17,7 @@ composer require legatus/container
 ```php
 <?php
 
-use function Legatus\Support\Container\Definition\Argument\service;
+use function Legatus\Supportservice;
 use Legatus\Support\Container\LegatusContainer;
 use Psr\Container\ContainerInterface as PsrContainer;
 

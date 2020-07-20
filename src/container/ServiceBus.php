@@ -9,17 +9,17 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\ServiceBus;
+namespace Legatus\Support;
 
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
 
 /**
- * Class Bus.
+ * Class ServiceBus.
  *
  * This class wraps a container interface and allows it to call methods on
- * different services statically (globally) through the Bus::call() method.
+ * different services statically (globally) through the ServiceBus::call() method.
  *
  * Using this is a bad idea if your services are not designed properly: i.e.
  * they contain shared state. Ideally, the methods you call should not have
@@ -32,7 +32,7 @@ use RuntimeException;
  *
  * As with everything, balance it out and use it wisely.
  */
-class Bus
+class ServiceBus
 {
     /**
      * @var ContainerInterface|null

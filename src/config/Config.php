@@ -9,14 +9,14 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\Config;
+namespace Legatus\Support;
 
 /**
- * Interface Reader.
+ * Interface Config.
  *
  * Reads configuration from any source.
  */
-interface Reader
+interface Config
 {
     /**
      * Reads a configuration entry.

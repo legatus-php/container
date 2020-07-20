@@ -9,29 +9,18 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container;
+namespace Legatus\Support;
 
 use Closure;
-use Legatus\Support\Container\Config\ArrayReader;
-use Legatus\Support\Container\Config\NullReader;
-use Legatus\Support\Container\Config\Reader;
-use Legatus\Support\Container\Definition\AliasDefinition;
-use Legatus\Support\Container\Definition\ArgumentDefinition;
-use Legatus\Support\Container\Definition\ClassDefinition;
-use Legatus\Support\Container\Definition\DeferredDefinition;
-use Legatus\Support\Container\Definition\Definition;
-use Legatus\Support\Container\Definition\FactoryDefinition;
-use Legatus\Support\Container\Definition\TagDefinition;
-use Legatus\Support\Container\Provider\ServiceProvider;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
 
 /**
- * Class LegatusContainer.
+ * Class Container.
  */
-class LegatusContainer implements ContainerInterface
+class Container implements ContainerInterface
 {
-    private Reader $config;
+    private Config $config;
     /**
      * Delegate containers are used when services are impossible to resolve.
      *
@@ -41,7 +30,7 @@ class LegatusContainer implements ContainerInterface
     /**
      * Completed definitions are definitions that can be instantiated.
      *
-     * @var Definition[]
+     * @var ServiceDefinition[]
      */
     private array $completed;
     /**
@@ -64,17 +53,17 @@ class LegatusContainer implements ContainerInterface
      */
     public static function configure(array $config): ContainerInterface
     {
-        return new self(new ArrayReader($config));
+        return new self(new ArrayConfig($config));
     }
 
     /**
-     * LegatusContainer constructor.
+     * Container constructor.
      *
-     * @param Reader|null $config
+     * @param Config|null $config
      */
-    public function __construct(Reader $config = null)
+    public function __construct(Config $config = null)
     {
-        $this->config = $config ?? new NullReader();
+        $this->config = $config ?? new NullConfig();
         $this->delegates = [];
         $this->completed = [];
         $this->deferred = [];
@@ -159,9 +148,9 @@ class LegatusContainer implements ContainerInterface
     /**
      * @param string $id
      *
-     * @return Definition
+     * @return ServiceDefinition
      */
-    public function extend(string $id): Definition
+    public function extend(string $id): ServiceDefinition
     {
         if (!array_key_exists($id, $this->deferred)) {
             $definition = new DeferredDefinition(
@@ -179,9 +168,9 @@ class LegatusContainer implements ContainerInterface
      * @param string      $id
      * @param string|null $concrete
      *
-     * @return ArgumentDefinition
+     * @return ArgumentServiceDefinition
      */
-    public function register(string $id, string $concrete = null): ArgumentDefinition
+    public function register(string $id, string $concrete = null): ArgumentServiceDefinition
     {
         $this->ensureDefinitionDoesNotExist($id);
         $concrete = $concrete ?? $id;
@@ -199,9 +188,9 @@ class LegatusContainer implements ContainerInterface
      * @param string   $id
      * @param callable $factory
      *
-     * @return Definition
+     * @return ServiceDefinition
      */
-    public function factory(string $id, callable $factory): Definition
+    public function factory(string $id, callable $factory): ServiceDefinition
     {
         $this->ensureDefinitionDoesNotExist($id);
         $definition = new FactoryDefinition(
@@ -254,16 +243,16 @@ class LegatusContainer implements ContainerInterface
     protected function ensureDefinitionDoesNotExist(string $id): void
     {
         if (array_key_exists($id, $this->completed)) {
-            throw new RuntimeException(sprintf('Definition with id "%s" already exists', $id));
+            throw new RuntimeException(sprintf('ServiceDefinition with id "%s" already exists', $id));
         }
     }
 
     /**
      * @param string $id
      *
-     * @return Definition|null
+     * @return ServiceDefinition|null
      */
-    protected function findCompleted(string $id): ?Definition
+    protected function findCompleted(string $id): ?ServiceDefinition
     {
         if (!array_key_exists($id, $this->completed)) {
             return null;
@@ -273,9 +262,9 @@ class LegatusContainer implements ContainerInterface
     }
 
     /**
-     * @param Definition $definition
+     * @param ServiceDefinition $definition
      */
-    private function makeSingletonIfApplies(Definition $definition): void
+    private function makeSingletonIfApplies(ServiceDefinition $definition): void
     {
         if ($this->config->read('container.default_to_singleton', true) === true) {
             $definition->makeSingleton();

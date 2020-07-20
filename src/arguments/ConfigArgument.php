@@ -9,15 +9,14 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\Definition\Argument;
+namespace Legatus\Support;
 
-use Legatus\Support\Container\Config\Reader;
 use Psr\Container\ContainerInterface;
 
 /**
  * Class ConfigArgument.
  */
-class ConfigArgument implements Argument
+class ConfigArgument implements Resolvable
 {
     private string $path;
     /**
@@ -28,8 +27,8 @@ class ConfigArgument implements Argument
     /**
      * ConfigArgument constructor.
      *
-     * @param string $path
-     * @param null   $default
+     * @param string     $path
+     * @param mixed|null $default
      */
     public function __construct(string $path, $default = null)
     {
@@ -39,11 +38,11 @@ class ConfigArgument implements Argument
 
     /**
      * @param ContainerInterface $container
-     * @param Reader             $config
+     * @param Config             $config
      *
      * @return mixed|void
      */
-    public function resolve(ContainerInterface $container, Reader $config)
+    public function resolve(ContainerInterface $container, Config $config)
     {
         return $config->read($this->path, $this->default);
     }

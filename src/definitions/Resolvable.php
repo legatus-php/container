@@ -9,9 +9,8 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\Definition;
+namespace Legatus\Support;
 
-use Legatus\Support\Container\Config\Reader;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -21,9 +20,9 @@ interface Resolvable
 {
     /**
      * @param ContainerInterface $container
-     * @param Reader             $config
+     * @param Config             $config
      *
      * @return mixed
      */
-    public function resolve(ContainerInterface $container, Reader $config);
+    public function resolve(ContainerInterface $container, Config $config);
 }

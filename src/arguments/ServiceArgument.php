@@ -9,16 +9,14 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Support\Container\Definition\Argument;
+namespace Legatus\Support;
 
-use Legatus\Support\Container\Config\Reader;
-use Legatus\Support\Container\Definition\MethodCall;
 use Psr\Container\ContainerInterface;
 
 /**
  * Class ServiceArgument.
  */
-class ServiceArgument implements Argument
+class ServiceArgument implements Resolvable
 {
     private string $serviceName;
     private ?MethodCall $methodCall;
@@ -36,11 +34,11 @@ class ServiceArgument implements Argument
 
     /**
      * @param ContainerInterface $container
-     * @param Reader             $config
+     * @param Config             $config
      *
      * @return mixed
      */
-    public function resolve(ContainerInterface $container, Reader $config)
+    public function resolve(ContainerInterface $container, Config $config)
     {
         $service = $container->get($this->serviceName);
         if ($this->methodCall === null) {
@@ -52,11 +50,11 @@ class ServiceArgument implements Argument
 
     /**
      * @param string     $method
-     * @param Argument[] $arguments
+     * @param Resolvable ...$arguments
      *
      * @return $this
      */
-    public function call(string $method, Argument ...$arguments): self
+    public function call(string $method, Resolvable ...$arguments): self
     {
         $this->methodCall = new MethodCall($method, ...$arguments);
 
