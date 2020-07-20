@@ -17,11 +17,11 @@ composer require legatus/container
 ```php
 <?php
 
-use function Legatus\Supportservice;
-use Legatus\Support\Container\LegatusContainer;
+use function Legatus\Support\service;
+use Legatus\Support\Container;
 use Psr\Container\ContainerInterface as PsrContainer;
 
-$container = new LegatusContainer();
+$container = new Container();
 
 // You can instantiate factories and fetch services from the passed container
 $container->factory('some-service', static function (PsrContainer $c) {
