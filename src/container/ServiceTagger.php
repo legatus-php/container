@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Legatus project organization.
  * (c) Matías Navarro-Carter <contact@mnavarro.dev>
@@ -12,15 +10,13 @@ declare(strict_types=1);
 namespace Legatus\Support;
 
 /**
- * NullConfig always returns null to any query.
+ * Interface ServiceTagger.
  */
-class NullConfig implements Config
+interface ServiceTagger
 {
     /**
-     * {@inheritdoc}
+     * @param string $tagName
+     * @param string ...$services
      */
-    public function __invoke(string $entry)
-    {
-        return null;
-    }
+    public function tag(string $tagName, string ...$services): void;
 }

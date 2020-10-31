@@ -11,50 +11,30 @@ declare(strict_types=1);
 
 namespace Legatus\Support;
 
-use Closure;
 use Psr\Container\ContainerInterface;
-use RuntimeException;
+use UltraLite\CompositeContainer\CompositeContainer;
 
 /**
  * Class Container.
  */
-class Container implements ContainerInterface
+class Container implements ContainerInterface, ServiceTagger
 {
-    private Config $config;
     /**
-     * Delegate containers are used when services are impossible to resolve.
-     *
-     * @var ContainerInterface[]
+     * @var Config
      */
-    private array $delegates;
+    private $config;
     /**
-     * Completed definitions are definitions that can be instantiated.
-     *
-     * @var ServiceDefinition[]
+     * @var Definition[]
      */
-    private array $completed;
+    protected array $definitions;
     /**
-     * Deferred definitions are definitions created by the extend method.
-     * A definition does not need to exist in order to be extended. The definition
-     * being extended will be created at resolve-time.
-     *
-     * @var DeferredDefinition[]
+     * @var string[][]
      */
-    private array $deferred;
+    protected array $tags;
     /**
-     * @var Closure[]|ServiceProvider[]
+     * @var CompositeContainer
      */
-    private array $providers;
-
-    /**
-     * @param array $config
-     *
-     * @return ContainerInterface
-     */
-    public static function configure(array $config): ContainerInterface
-    {
-        return new self(new ArrayConfig($config));
-    }
+    protected CompositeContainer $delegates;
 
     /**
      * Container constructor.
@@ -64,77 +44,9 @@ class Container implements ContainerInterface
     public function __construct(Config $config = null)
     {
         $this->config = $config ?? new NullConfig();
-        $this->delegates = [];
-        $this->completed = [];
-        $this->deferred = [];
-        $this->providers = [];
-    }
-
-    /**
-     * @param string $id
-     *
-     * @return mixed|object
-     */
-    public function get($id)
-    {
-        if ($id === ContainerInterface::class || $id === __CLASS__) {
-            return $this;
-        }
-
-        // First, we check if is in a deferred definition.
-        if (array_key_exists($id, $this->deferred)) {
-            return $this->deferred[$id]->resolve($this, $this->config);
-        }
-        // Then, we check if is in a completed service
-        if (array_key_exists($id, $this->completed)) {
-            return $this->completed[$id]->resolve($this, $this->config);
-        }
-        // Then in the container delegates
-        foreach ($this->delegates as $container) {
-            if ($container->has($id)) {
-                return $container->get($id);
-            }
-        }
-        throw NotFoundException::id($id);
-    }
-
-    /**
-     * @param string $id
-     *
-     * @return bool
-     */
-    public function has($id): bool
-    {
-        if ($id === ContainerInterface::class || $id === __CLASS__) {
-            return true;
-        }
-        if (array_key_exists($id, $this->deferred)) {
-            return true;
-        }
-        if (array_key_exists($id, $this->completed)) {
-            return true;
-        }
-        foreach ($this->delegates as $container) {
-            if ($container->has($id)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param ServiceProvider $provider
-     * @param string|null     $name
-     */
-    public function addProvider(ServiceProvider $provider, string $name = null): void
-    {
-        $name = $name ?? get_class($provider);
-        if (array_key_exists($name, $this->providers)) {
-            throw new RuntimeException(sprintf('Provided named %s is already registered', $name));
-        }
-        $provider->register($this, $this->config);
-        $this->providers[$name] = $provider;
+        $this->definitions = [];
+        $this->tags = [];
+        $this->delegates = new CompositeContainer();
     }
 
     /**
@@ -142,132 +54,142 @@ class Container implements ContainerInterface
      */
     public function addDelegate(ContainerInterface $container): void
     {
-        $this->delegates[] = $container;
+        $this->delegates->addContainer($container);
     }
 
     /**
      * @param string $id
      *
-     * @return ServiceDefinition
+     * @return mixed
      */
-    public function extend(string $id): ServiceDefinition
+    public function get($id)
     {
-        if (!array_key_exists($id, $this->deferred)) {
-            $definition = new DeferredDefinition(
-                $id,
-                Closure::fromCallable([$this, 'findCompleted'])
-            );
-            $this->makeSingletonIfApplies($definition);
-            $this->deferred[$id] = $definition;
+        if ($this->hasDefinition($id)) {
+            return $this->fetch($id)->resolve($this, $this->config);
         }
-
-        return $this->deferred[$id];
+        if ($this->hasTag($id)) {
+            return array_map(fn (Definition $definition) => $definition->resolve($this, $this->config), $this->fetchTag($id));
+        }
+        if ($this->delegates->has($id)) {
+            return $this->delegates->get($id);
+        }
+        throw new NotFoundException(sprintf('Service "%s" not found', $id));
     }
 
     /**
-     * @param string      $id
-     * @param string|null $concrete
-     *
-     * @return ArgumentServiceDefinition
-     */
-    public function register(string $id, string $concrete = null): ArgumentServiceDefinition
-    {
-        $this->ensureDefinitionDoesNotExist($id);
-        $concrete = $concrete ?? $id;
-        $definition = new ClassDefinition(
-            $id,
-            $concrete
-        );
-        $this->makeSingletonIfApplies($definition);
-        $this->completed[$id] = $definition;
-
-        return $definition;
-    }
-
-    /**
-     * @param string   $id
-     * @param callable $factory
-     *
-     * @return ServiceDefinition
-     */
-    public function factory(string $id, callable $factory): ServiceDefinition
-    {
-        $this->ensureDefinitionDoesNotExist($id);
-        $definition = new FactoryDefinition(
-            $id,
-            $factory
-        );
-        $this->makeSingletonIfApplies($definition);
-        $this->completed[$id] = $definition;
-
-        return $definition;
-    }
-
-    /**
-     * @param string $alias
      * @param string $id
+     * @noinspection PhpMissingParamTypeInspection
+     *
+     * @return bool
      */
-    public function alias(string $alias, string $id): void
+    public function has($id): bool
     {
-        if (array_key_exists($alias, $this->completed)) {
-            throw new RuntimeException(sprintf('There is already a definition using the id "%s"', $alias));
+        return $this->hasDefinition($id) || $this->hasTag($id) || $this->delegates->has($id);
+    }
+
+    /**
+     * @param callable|ServiceProvider $serviceProvider
+     */
+    public function provide(callable $serviceProvider): void
+    {
+        $serviceProvider($this, $this->config);
+    }
+
+    /**
+     * @param string        $id
+     * @param callable|null $factory
+     *
+     * @return Definition
+     */
+    public function register(string $id, callable $factory = null): Definition
+    {
+        $definition = $this->getOrCreateDefinition($id);
+        if ($factory !== null) {
+            $definition->setFactory($factory);
         }
-        $this->completed[$alias] = new AliasDefinition($alias, $id);
+        $this->definitions[$id] = $definition;
+
+        return $definition;
+    }
+
+    /**
+     * @param callable|Inflector $inflector
+     */
+    public function inflect(string $id, callable $inflector): void
+    {
+        $definition = $this->getOrCreateDefinition($id);
+        $definition->inflect($inflector);
+        $this->definitions[$id] = $definition;
+    }
+
+    public function decorate(string $id, callable $decorator): void
+    {
+        $definition = $this->getOrCreateDefinition($id);
+        $definition->decorate($decorator);
+        $this->definitions[$id] = $definition;
+    }
+
+    public function alias(string $id, string $target): void
+    {
+        $definition = $this->getOrCreateDefinition($target);
+        $this->definitions[$id] = $definition;
     }
 
     /**
      * @param string $tagName
-     * @param string $id
+     * @param string ...$services
      */
-    public function tag(string $tagName, string $id): void
+    public function tag(string $tagName, string ...$services): void
     {
-        $key = null;
-        if (strpos($tagName, '#') !== false) {
-            [$tagName, $key] = explode('#', $tagName);
+        if (!array_key_exists($tagName, $this->tags)) {
+            $this->tags[$tagName] = [];
         }
-        if (!array_key_exists($tagName, $this->completed)) {
-            $this->completed[$tagName] = new TagDefinition($tagName, $id, $key);
-
-            return;
-        }
-        $definition = $this->completed[$tagName] ?? null;
-        if (!$definition instanceof TagDefinition) {
-            throw new RuntimeException('Trying to override a definition id that is not a tag');
-        }
-        $definition->addService($id, $key);
-    }
-
-    /**
-     * @param string $id
-     */
-    protected function ensureDefinitionDoesNotExist(string $id): void
-    {
-        if (array_key_exists($id, $this->completed)) {
-            throw new RuntimeException(sprintf('ServiceDefinition with id "%s" already exists', $id));
+        foreach ($services as $service) {
+            if (in_array($service, $this->tags[$tagName], true)) {
+                throw new \RuntimeException(sprintf('Service "%s" is already in tag "%s"', $service, $tagName));
+            }
+            $this->tags[$tagName][] = $service;
         }
     }
 
-    /**
-     * @param string $id
-     *
-     * @return ServiceDefinition|null
-     */
-    protected function findCompleted(string $id): ?ServiceDefinition
+    private function getOrCreateDefinition(string $id): Definition
     {
-        if (!array_key_exists($id, $this->completed)) {
-            return null;
-        }
-
-        return $this->completed[$id];
+        return $this->definitions[$id] ?? new Definition($id, $this);
     }
 
     /**
-     * @param ServiceDefinition $definition
+     * Fetches a single definition from the container.
      */
-    private function makeSingletonIfApplies(ServiceDefinition $definition): void
+    private function fetch(string $id): Definition
     {
-        if ($this->config->read('container.default_to_singleton', true) === true) {
-            $definition->makeSingleton();
+        if (!$this->hasDefinition($id)) {
+            throw new \RuntimeException(sprintf('Service of id "%s" not found', $id));
         }
+
+        return $this->definitions[$id];
+    }
+
+    /**
+     * @return Definition[]
+     */
+    private function fetchTag(string $tagName): array
+    {
+        $definitions = [];
+        $ids = $this->tags[$tagName] ?? [];
+        foreach ($ids as $id) {
+            $definitions[] = $this->fetch($id);
+        }
+
+        return $definitions;
+    }
+
+    private function hasDefinition(string $id): bool
+    {
+        return array_key_exists($id, $this->definitions) && $this->definitions[$id]->hasFactory();
+    }
+
+    private function hasTag(string $id): bool
+    {
+        return array_key_exists($id, $this->tags);
     }
 }

@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Legatus project organization.
  * (c) Matías Navarro-Carter <contact@mnavarro.dev>
@@ -14,15 +12,15 @@ namespace Legatus\Support;
 use Psr\Container\ContainerInterface;
 
 /**
- * Interface Resolvable.
+ * A Service Factory is a function that creates a service.
  */
-interface Resolvable
+interface ServiceFactory
 {
     /**
-     * @param ContainerInterface $container
-     * @param Config             $config
+     * @param ContainerInterface $s
+     * @param Config             $c
      *
      * @return mixed
      */
-    public function resolve(ContainerInterface $container, Config $config);
+    public function __invoke(ContainerInterface $s, Config $c);
 }

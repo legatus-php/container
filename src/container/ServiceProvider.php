@@ -14,7 +14,7 @@ namespace Legatus\Support;
 /**
  * Interface ServiceProvider.
  *
- * A Service Provider is an object that provides services to the main Legatus
+ * A Service Provider is an function that provides services to the main Legatus
  * Container instance.
  */
 interface ServiceProvider
@@ -23,5 +23,5 @@ interface ServiceProvider
      * @param Container $container
      * @param Config    $config
      */
-    public function register(Container $container, Config $config): void;
+    public function __invoke(Container $container, Config $config): void;
 }

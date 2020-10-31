@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6b7ab780fdea5100de0b43d56732a0f8",
+    "content-hash": "f7c8af771a0c9894d17a97b8480cd2cc",
     "packages": [
         {
             "name": "psr/container",
@@ -54,6 +54,104 @@
                 "psr"
             ],
             "time": "2017-02-14T16:28:37+00:00"
+        },
+        {
+            "name": "ultra-lite/composite-container",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ultra-lite/composite-container.git",
+                "reference": "c3ceea320c62f28b2737db959f2d3b7cbab2fc9c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ultra-lite/composite-container/zipball/c3ceea320c62f28b2737db959f2d3b7cbab2fc9c",
+                "reference": "c3ceea320c62f28b2737db959f2d3b7cbab2fc9c",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0",
+                "psr/container": "^1.0"
+            },
+            "require-dev": {
+                "phpspec/phpspec": "^3.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "UltraLite\\CompositeContainer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "support": {
+                "issues": "https://github.com/ultra-lite/composite-container/issues",
+                "source": "https://github.com/ultra-lite/composite-container/tree/master"
+            },
+            "time": "2017-02-15T17:42:56+00:00"
+        },
+        {
+            "name": "yiisoft/injector",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/injector.git",
+                "reference": "cec7e23b8ff2a6980b78c6f4ed717cf5c40fef9a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiisoft/injector/zipball/cec7e23b8ff2a6980b78c6f4ed717cf5c40fef9a",
+                "reference": "cec7e23b8ff2a6980b78c6f4ed717cf5c40fef9a",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4|^8.0",
+                "psr/container": "1.0.0"
+            },
+            "require-dev": {
+                "infection/infection": "^0.17.3",
+                "phan/phan": "^3.2",
+                "phpunit/phpunit": "^9.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Yiisoft\\Injector\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "PSR-11 compatible injector. Executes a callable and makes an instances by injecting dependencies from a given DI container.",
+            "homepage": "http://www.yiiframework.com/",
+            "keywords": [
+                "PSR-11",
+                "dependency injection",
+                "di",
+                "injector",
+                "reflection"
+            ],
+            "support": {
+                "forum": "http://www.yiiframework.com/forum/",
+                "irc": "irc://irc.freenode.net/yii",
+                "issues": "https://github.com/yiisoft/injector/issues?state=open",
+                "source": "https://github.com/yiisoft/injector",
+                "wiki": "http://www.yiiframework.com/wiki/"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/yiisoft",
+                    "type": "github"
+                },
+                {
+                    "url": "https://opencollective.com/yiisoft",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2020-08-28T11:05:41+00:00"
         }
     ],
     "packages-dev": [

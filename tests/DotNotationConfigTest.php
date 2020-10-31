@@ -14,13 +14,13 @@ namespace Legatus\Support;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class ArrayConfigTest.
+ * Class DotNotationConfigTest.
  */
-class ArrayConfigTest extends TestCase
+class DotNotationConfigTest extends TestCase
 {
     public function testItReadsEntryWithDotNotation(): void
     {
-        $reader = new ArrayConfig([
+        $config = new DotNotationConfig([
             'something' => [
                 'very' => [
                     'deeply' => [
@@ -30,6 +30,6 @@ class ArrayConfigTest extends TestCase
             ],
         ]);
 
-        self::assertSame('OK', $reader->read('something.very.deeply.nested'));
+        self::assertSame('OK', $config('something.very.deeply.nested'));
     }
 }
