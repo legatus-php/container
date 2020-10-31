@@ -12,19 +12,15 @@ declare(strict_types=1);
 namespace Legatus\Support;
 
 use Psr\Container\ContainerInterface;
-use ReflectionClass;
 use ReflectionException;
+use Yiisoft\Injector\Injector;
 
 /**
  * Class ReflectionContainer.
  */
 final class ReflectionContainer implements ContainerInterface
 {
-    use ContainerArgumentReflectorResolver;
-
-    /**
-     * @var bool
-     */
+    private Injector $injector;
     private bool $cacheResolutions;
     /**
      * Cache of resolutions.
@@ -34,14 +30,25 @@ final class ReflectionContainer implements ContainerInterface
     private array $cache;
 
     /**
-     * ReflectionContainer constructor.
-     *
      * @param ContainerInterface $container
      * @param bool               $cacheResolutions
+     *
+     * @return ReflectionContainer
      */
-    public function __construct(ContainerInterface $container, bool $cacheResolutions = true)
+    public static function from(ContainerInterface $container, bool $cacheResolutions = true): ReflectionContainer
     {
-        $this->container = $container;
+        return new self(new Injector($container), $cacheResolutions);
+    }
+
+    /**
+     * ReflectionContainer constructor.
+     *
+     * @param Injector $injector
+     * @param bool     $cacheResolutions
+     */
+    public function __construct(Injector $injector, bool $cacheResolutions = true)
+    {
+        $this->injector = $injector;
         $this->cacheResolutions = $cacheResolutions;
         $this->cache = [];
     }
@@ -60,20 +67,14 @@ final class ReflectionContainer implements ContainerInterface
         if (!$this->has($id)) {
             throw new NotFoundException(sprintf('Alias (%s) is not an existing class and therefore cannot be resolved', $id));
         }
-        /** @psalm-suppress ArgumentTypeCoercion */
-        $reflector = new ReflectionClass($id);
-        $construct = $reflector->getConstructor();
 
-        $resolution = $construct === null
-            ? new $id()
-            : $resolution = $reflector->newInstanceArgs($this->reflectArguments($construct))
-        ;
+        $service = $this->injector->make($id);
 
         if ($this->cacheResolutions === true) {
-            $this->cache[$id] = $resolution;
+            $this->cache[$id] = $service;
         }
 
-        return $resolution;
+        return $service;
     }
 
     /**

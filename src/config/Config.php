@@ -21,12 +21,9 @@ interface Config
     /**
      * Reads a configuration entry.
      *
-     * Query strings must follow the dot notation convention.
+     * @param string $entry
      *
-     * @param string     $query
-     * @param mixed|null $default
-     *
-     * @return mixed
+     * @return mixed|null
      */
-    public function read(string $query, $default = null);
+    public function __invoke(string $entry);
 }

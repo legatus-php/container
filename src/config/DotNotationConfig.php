@@ -12,16 +12,15 @@ declare(strict_types=1);
 namespace Legatus\Support;
 
 /**
- * Class ArrayConfig.
- *
- * Allows to query with dot notation on an array.
+ * DotNotationConfig reads configuration entries from a multidimensional array
+ * in a dot notation fashion.
  */
-class ArrayConfig implements Config
+final class DotNotationConfig implements Config
 {
     private array $config;
 
     /**
-     * ArrayConfig constructor.
+     * DotNotationConfig constructor.
      *
      * @param array $config
      */
@@ -33,13 +32,13 @@ class ArrayConfig implements Config
     /**
      * {@inheritdoc}
      */
-    public function read(string $query, $default = null)
+    public function __invoke(string $entry)
     {
-        $parts = explode('.', $query);
+        $parts = explode('.', $entry);
         $data = $this->config;
         while (count($parts) > 0) {
             if ($data === null) {
-                return $default;
+                return null;
             }
             $part = array_shift($parts);
 
