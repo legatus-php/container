@@ -96,18 +96,25 @@ class Container implements ContainerInterface, ServiceTagger
     }
 
     /**
-     * @param string        $id
-     * @param callable|null $factory
+     * @param string               $abstract
+     * @param string|callable|null $concrete
      *
      * @return Definition
      */
-    public function register(string $id, callable $factory = null): Definition
+    public function register(string $abstract, $concrete = null): Definition
     {
-        $definition = $this->getOrCreateDefinition($id);
-        if ($factory !== null) {
-            $definition->setFactory($factory);
+        $definition = $this->getOrCreateDefinition($abstract);
+
+        if (is_string($concrete) && class_exists($concrete)) {
+            $concrete = fn () => $this->delegates->get($concrete);
         }
-        $this->definitions[$id] = $definition;
+        if ($concrete === null && class_exists($abstract)) {
+            $concrete = fn () => $this->delegates->get($abstract);
+        }
+        if (is_callable($concrete)) {
+            $definition->setFactory($concrete);
+        }
+        $this->definitions[$abstract] = $definition;
 
         return $definition;
     }

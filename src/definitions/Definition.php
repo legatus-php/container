@@ -58,11 +58,11 @@ class Definition
     }
 
     /**
-     * @param $factory
+     * @param callable $factory
      *
      * @return $this
      */
-    public function setFactory($factory): Definition
+    public function setFactory(callable $factory): Definition
     {
         if ($this->factory !== null) {
             throw new \RuntimeException(sprintf('Factory for service "%s" has already been registered', $this->name));
