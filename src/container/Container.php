@@ -109,7 +109,7 @@ class Container implements ContainerInterface, DefinitionHelper
     public function register(string $abstract, $concrete = null): Definition
     {
         $definition = $this->getOrCreateDefinition($abstract);
-        if (is_object($concrete)) {
+        if (is_object($concrete) && !$concrete instanceof \Closure) {
             $concrete = static fn () => $concrete;
         }
         if (is_string($concrete) && class_exists($concrete)) {
