@@ -37,15 +37,10 @@
     },
     "scripts": {
         "lint": "php-cs-fixer fix --ansi",
-        "ci:style": "php-cs-fixer fix --dry-run -vvv --ansi",
-        "ci:unit": "phpunit --testdox --coverage-text",
-        "ci:types": "psalm --shepherd --stats",
-        "ci:infection": "infection",
-        "ci": [
-            "@ci:types",
-            "@ci:unit",
-            "@ci:style",
-            "@ci:infection"
+        "pr": [
+            "php-cs-fixer fix --dry-run -vvv",
+            "psalm --no-cache --stats",
+            "XDEBUG_MODE=coverage phpunit --testdox --coverage-text"
         ]
     }
 }

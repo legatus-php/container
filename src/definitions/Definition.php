@@ -1,8 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 /*
- * This file is part of the Legatus project organization.
- * (c) Matías Navarro-Carter <contact@mnavarro.dev>
+ * @project Legatus Container
+ * @link https://github.com/legatus-php/container
+ * @package legatus/container
+ * @author Matias Navarro-Carter mnavarrocarter@gmail.com
+ * @license MIT
+ * @copyright 2021 Matias Navarro-Carter
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -35,18 +42,18 @@ class Definition
      */
     private array $decorators;
 
-    private ServiceTagger $tagger;
+    private DefinitionHelper $helper;
 
     /**
      * Definition constructor.
      *
-     * @param string        $name
-     * @param ServiceTagger $tagger
+     * @param string           $name
+     * @param DefinitionHelper $helper
      */
-    public function __construct(string $name, ServiceTagger $tagger)
+    public function __construct(string $name, DefinitionHelper $helper)
     {
         $this->name = $name;
-        $this->tagger = $tagger;
+        $this->helper = $helper;
         $this->singleton = true;
         $this->inflectors = [];
         $this->decorators = [];
@@ -111,7 +118,16 @@ class Definition
     public function tag(string ...$tags): Definition
     {
         foreach ($tags as $tag) {
-            $this->tagger->tag($tag, $this->name);
+            $this->helper->tag($tag, $this->name);
+        }
+
+        return $this;
+    }
+
+    public function alias(string ...$aliases): Definition
+    {
+        foreach ($aliases as $alias) {
+            $this->helper->alias($alias, $this->name);
         }
 
         return $this;

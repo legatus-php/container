@@ -3,8 +3,13 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Legatus project organization.
- * (c) Matías Navarro-Carter <contact@mnavarro.dev>
+ * @project Legatus Container
+ * @link https://github.com/legatus-php/container
+ * @package legatus/container
+ * @author Matias Navarro-Carter mnavarrocarter@gmail.com
+ * @license MIT
+ * @copyright 2021 Matias Navarro-Carter
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -17,7 +22,7 @@ use UltraLite\CompositeContainer\CompositeContainer;
 /**
  * Class Container.
  */
-class Container implements ContainerInterface, ServiceTagger
+class Container implements ContainerInterface, DefinitionHelper
 {
     /**
      * @var Config
@@ -96,15 +101,17 @@ class Container implements ContainerInterface, ServiceTagger
     }
 
     /**
-     * @param string               $abstract
-     * @param string|callable|null $concrete
+     * @param string                      $abstract
+     * @param string|callable|object|null $concrete
      *
      * @return Definition
      */
     public function register(string $abstract, $concrete = null): Definition
     {
         $definition = $this->getOrCreateDefinition($abstract);
-
+        if (is_object($concrete)) {
+            $concrete = static fn () => $concrete;
+        }
         if (is_string($concrete) && class_exists($concrete)) {
             $concrete = fn () => $this->delegates->get($concrete);
         }
@@ -120,6 +127,7 @@ class Container implements ContainerInterface, ServiceTagger
     }
 
     /**
+     * @param string             $id
      * @param callable|Inflector $inflector
      */
     public function inflect(string $id, callable $inflector): void
@@ -177,6 +185,8 @@ class Container implements ContainerInterface, ServiceTagger
     }
 
     /**
+     * @param string $tagName
+     *
      * @return Definition[]
      */
     private function fetchTag(string $tagName): array

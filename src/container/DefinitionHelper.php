@@ -16,19 +16,9 @@ declare(strict_types=1);
 
 namespace Legatus\Support;
 
-use Psr\Container\ContainerInterface as Services;
-
 /**
- * A Decorator is a function that returns a covariant type of the passed service.
+ * Interface DefinitionHelper.
  */
-interface Decorator
+interface DefinitionHelper extends Aliaser, Tagger
 {
-    /**
-     * @param object   $service
-     * @param Services $s
-     * @param Config   $c
-     *
-     * @return mixed The modified service
-     */
-    public function __invoke(object $service, Services $s, Config $c);
 }

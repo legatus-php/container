@@ -16,19 +16,14 @@ declare(strict_types=1);
 
 namespace Legatus\Support;
 
-use Psr\Container\ContainerInterface as Services;
-
 /**
- * A Decorator is a function that returns a covariant type of the passed service.
+ * Interface Tagger.
  */
-interface Decorator
+interface Tagger
 {
     /**
-     * @param object   $service
-     * @param Services $s
-     * @param Config   $c
-     *
-     * @return mixed The modified service
+     * @param string $tagName     The tag name
+     * @param string ...$services The services that will be bound to the tag
      */
-    public function __invoke(object $service, Services $s, Config $c);
+    public function tag(string $tagName, string ...$services): void;
 }

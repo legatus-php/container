@@ -3,8 +3,13 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Legatus project organization.
- * (c) Matías Navarro-Carter <contact@mnavarro.dev>
+ * @project Legatus Container
+ * @link https://github.com/legatus-php/container
+ * @package legatus/container
+ * @author Matias Navarro-Carter mnavarrocarter@gmail.com
+ * @license MIT
+ * @copyright 2021 Matias Navarro-Carter
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -14,5 +19,33 @@ namespace Legatus\Support;
 use PHPUnit\Framework\TestCase;
 
 class ContainerTest extends TestCase
+{
+    public function testItRegistersInstantiatedObject(): void
+    {
+        $service = new DummyService();
+        $container = new Container();
+        $container->register('service', $service);
+        self::assertSame($service, $container->get('service'));
+    }
+
+    public function testItResolvesAlias(): void
+    {
+        $service = new DummyService();
+        $container = new Container();
+        $container->register('service', $service)
+            ->alias('some-alias');
+        self::assertSame($service, $container->get('some-alias'));
+    }
+
+    public function testItResolvesWithDelegate(): void
+    {
+        $container = new Container();
+        $container->addDelegate(ReflectionContainer::from($container));
+        $container->register(DummyService::class);
+        self::assertInstanceOf(DummyService::class, $container->get(DummyService::class));
+    }
+}
+
+class DummyService
 {
 }
